@@ -13,7 +13,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.amplifyframework.core.Amplify;
 
 public class CodeConfirmFragment extends Fragment {
     NavController navController;
@@ -49,12 +48,12 @@ public class CodeConfirmFragment extends Fragment {
         //username=params.getString("username");
 
         submit.setOnClickListener(v->{
-            Amplify.Auth.confirmSignUp(
+            /*Amplify.Auth.confirmSignUp(
                 username,
                 code.getText().toString(),
                 result -> Log.i("AuthQuickstart", result.isSignUpComplete() ? "Confirm signUp succeeded" : "Confirm sign up not complete"),
                 error -> Log.e("AuthQuickstart", error.toString())
-            );
+            );*/
         });
         return fragment_layout;
     }

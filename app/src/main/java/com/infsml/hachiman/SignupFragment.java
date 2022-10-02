@@ -1,12 +1,6 @@
 package com.infsml.hachiman;
 
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
-
-import android.util.Log;
 import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,14 +8,10 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.amazonaws.mobileconnectors.cognitoauth.Auth;
-import com.amplifyframework.auth.AuthUserAttribute;
-import com.amplifyframework.auth.AuthUserAttributeKey;
-import com.amplifyframework.auth.options.AuthSignUpOptions;
-import com.amplifyframework.core.Amplify;
+import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.regex.Pattern;
 
 public class SignupFragment extends Fragment {
@@ -91,7 +81,7 @@ public class SignupFragment extends Fragment {
             if(!password_s.equals(password_confirm_s)){
                 giveMsg("Passwords must match");return;
             }
-            List<AuthUserAttribute>attributeList=new ArrayList<>();
+            /*List<AuthUserAttribute>attributeList=new ArrayList<>();
             attributeList.add(new AuthUserAttribute(AuthUserAttributeKey.custom("custom:custom:section"),section.getText().toString()));
             attributeList.add(new AuthUserAttribute(AuthUserAttributeKey.email(),email.getText().toString()));
             attributeList.add(new AuthUserAttribute(AuthUserAttributeKey.address(),"Somewhere around here"));
@@ -102,7 +92,7 @@ public class SignupFragment extends Fragment {
             Amplify.Auth.signUp(usn.getText().toString(),password.getText().toString(),signUpOptions,
                     result-> Log.i("SignUP","Res : "+ result.toString()),
                     error-> Log.e("SignUP","Err : ",error)
-            );
+            );*/
         });
 
         return fragment_view;

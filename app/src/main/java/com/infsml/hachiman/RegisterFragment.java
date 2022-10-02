@@ -25,7 +25,7 @@ public class RegisterFragment extends Fragment {
     String auth_token=null;
     String event=null;
     String code=null;
-    String url_link_default="https://api.infsml.in/hachiman/register/";
+    String url_link_default=Utility.api_base+"/register";
     boolean isAdmin=false;
     Bundle bundle;
     public RegisterFragment() {
@@ -102,7 +102,7 @@ public class RegisterFragment extends Fragment {
                     try{
                         JSONObject jsonObject = new JSONObject();
                         jsonObject.put("event",event);
-                        jsonObject.put("usn",username);
+                        jsonObject.put("username",username);
                         jsonObject.put("code",code);
                         jsonObject.put("auth_token",auth_token);
                         JSONObject jsonObject1 = Utility.postJSON(

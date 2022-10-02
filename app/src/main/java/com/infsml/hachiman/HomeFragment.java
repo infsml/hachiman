@@ -1,17 +1,6 @@
 package com.infsml.hachiman;
 
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.ActionBar;
-import androidx.core.view.MenuHost;
-import androidx.core.view.MenuProvider;
-import androidx.fragment.app.Fragment;
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -21,21 +10,17 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
-import com.amplifyframework.auth.AuthUserAttribute;
-import com.amplifyframework.auth.cognito.AWSCognitoAuthSession;
-import com.amplifyframework.core.Amplify;
+import androidx.annotation.NonNull;
+import androidx.core.view.MenuProvider;
+import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.google.android.material.appbar.MaterialToolbar;
-import com.google.gson.JsonObject;
 
-import org.json.JSONArray;
 import org.json.JSONObject;
-
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
 
 public class HomeFragment extends Fragment implements MenuProvider{
     NavController navController;
@@ -65,9 +50,7 @@ public class HomeFragment extends Fragment implements MenuProvider{
                              Bundle savedInstanceState) {
         _this=this;
         View fragment_view =inflater.inflate(R.layout.fragment_home, container, false);
-
         navController = Navigation.findNavController(getActivity(),R.id.fragmentContainerView);
-
 
         bundle = getArguments();
         if(bundle==null){
@@ -92,23 +75,18 @@ public class HomeFragment extends Fragment implements MenuProvider{
             b.setText(R.string.signing_out);
             b.setClickable(false);
             b.setEnabled(false);
-            Amplify.Auth.signOut(
-                () ->{
-                    Log.i("AuthQuickstart", "Signed out successfully");
-                    runOutside(R.id.action_homeFragment_to_loginFragment);
-                },
-                error ->{
-                    Log.e("AuthQuickstart", error.toString());
-                    requireActivity().runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            b.setText(R.string.signout);
-                            b.setClickable(true);
-                            b.setEnabled(true);
-                        }
-                    });
-                }
-            );
+            try{
+
+            }catch (Exception e) {
+                requireActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        b.setText(R.string.signout);
+                        b.setClickable(true);
+                        b.setEnabled(true);
+                    }
+                });
+            }
         });
         return fragment_view;
     }
@@ -116,7 +94,7 @@ public class HomeFragment extends Fragment implements MenuProvider{
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                if(jsonArray.optInt("state")==StateCodes.state_invalid_login){
+                /*if(jsonArray.optInt("state")==StateCodes.state_invalid_login){
                     navController.navigate(R.id.action_homeFragment_to_loginFragment);
                     return;
                 }
@@ -124,7 +102,7 @@ public class HomeFragment extends Fragment implements MenuProvider{
                 if(admin){
                     MenuHost host = requireActivity();
                     host.addMenuProvider(_this,getViewLifecycleOwner());
-                }
+                }*/
                 HomeListAdapter adapter = (HomeListAdapter) recyclerView.getAdapter();
                 adapter.loadData(jsonArray.optJSONArray("data"));
                 Log.i("Hachiman",username);
@@ -161,10 +139,10 @@ public class HomeFragment extends Fragment implements MenuProvider{
             public void run() {
                 try {
                     JSONObject payload = new JSONObject();
-                    payload.put("usn",username);
+                    payload.put("username",username);
                     payload.put("auth_token",auth_token);
                     JSONObject jsonObject = Utility.postJSON(
-                        "https://api.infsml.in/hachiman/get-event/",
+                        Utility.api_base+"/get-event",
                         payload.toString()
                     );
                     chViewOutside(jsonObject);

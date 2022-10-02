@@ -20,4 +20,6 @@
     <string name="already_registered">Already Registered</string>
     <string name="unregister">Unregister</string>
     <string name="signing_out">Signing Out...</string>
+    <string name="name">Name</string>
+    <string name="code">Code</string>
 </resources>

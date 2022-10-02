@@ -1,13 +1,7 @@
 package com.infsml.hachiman;
 
+import android.content.Context;
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentContainerView;
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
-import androidx.navigation.fragment.NavHostFragment;
-
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,12 +9,15 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.amplifyframework.auth.AuthUserAttribute;
-import com.amplifyframework.auth.cognito.AWSCognitoAuthSession;
-import com.amplifyframework.core.Amplify;
+import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 
-import java.util.HashMap;
-import java.util.Map;
+import org.json.JSONObject;
+
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.nio.charset.StandardCharsets;
 
 public class LoginFragment extends Fragment {
     NavController navController;
@@ -32,8 +29,6 @@ public class LoginFragment extends Fragment {
     public static LoginFragment newInstance() {
         LoginFragment fragment = new LoginFragment();
         Bundle args = new Bundle();
-        //args.putString(ARG_PARAM1, param1);
-        //args.putString(ARG_PARAM2, param2);
         fragment.setArguments(args);
         return fragment;
     }
@@ -58,50 +53,38 @@ public class LoginFragment extends Fragment {
         spinner = fragment_view.findViewById(R.id.progressBar);
         final TextView usn_textView = fragment_view.findViewById(R.id.USN);
         final TextView pass_textView = fragment_view.findViewById(R.id.PASSWORD);
-        /*signup_button.setOnClickListener((v)->{
+        signup_button.setOnClickListener((v)->{
             navController.navigate(R.id.action_loginFragment_to_signupFragment);
-        });*/
+        });
         Button login_button = fragment_view.findViewById(R.id.button2);
         checkSignIn();
         login_button.setOnClickListener((v)->{
             button_list.setVisibility(View.GONE);
             spinner.setVisibility(View.VISIBLE);
-            Log.i("AuthQuickstart", "signing in");
-            Amplify.Auth.signIn(
-                usn_textView.getText().toString(),
-                pass_textView.getText().toString(),
-                result -> {
-                    if(result.isSignInComplete()){
-                        checkSignIn();
-                    }else{
-                        Log.i("AuthQuickStart","Sign in not complete");
-                    }
-                },
-                error -> Log.e("AuthQuickstart", error.toString())
-            );
-        });
-        return fragment_view;
-    }
-    public void checkSignIn(){
-        Log.i("Hachiman","Checking previous SignIn");
-        Amplify.Auth.fetchAuthSession(
-                result ->{
-                    Log.i("AmplifyQuickstart", result.toString());
-                    if(result.isSignedIn()){
-                        AWSCognitoAuthSession cognitoAuthSession = (AWSCognitoAuthSession) result;
-                        String username = Amplify.Auth.getCurrentUser().getUsername();
-                        String auth_token = cognitoAuthSession.getUserPoolTokens().getValue().getAccessToken();
-                        Log.i("Hachiman",username+":"+auth_token);
+            (new Thread(){
+                @Override
+                public void run(){
+                    try {
+                        JSONObject payload = new JSONObject();
+                        payload.put("username", usn_textView.getText().toString());
+                        payload.put("password",pass_textView.getText().toString());
+                        JSONObject res = Utility.postJSON(Utility.api_base + "/login", payload.toString());
+                        JSONObject saveData = new JSONObject();
+                        saveData.put("username",payload.optString("username"));
+                        saveData.put("token",res.optString("token"));
+                        FileOutputStream prev_login = getContext().openFileOutput("prev_login.json", Context.MODE_PRIVATE);
+                        prev_login.write(saveData.toString().getBytes(StandardCharsets.UTF_8));
                         requireActivity().runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
                                 Bundle bundle = new Bundle();
-                                bundle.putString("username",username);
-                                bundle.putString("auth_token",auth_token);
+                                bundle.putString("username",payload.optString("username"));
+                                bundle.putString("auth_token",res.optString("token"));
                                 navController.navigate(R.id.action_loginFragment_to_homeFragment,bundle);
                             }
                         });
-                    }else{
+                    }catch (Exception e){
+                        Log.e("Hachiman","LoginError",e);
                         requireActivity().runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
@@ -110,9 +93,41 @@ public class LoginFragment extends Fragment {
                             }
                         });
                     }
-                },
-                error -> Log.e("AmplifyQuickstart", error.toString())
-        );
+                }
+            }).start();
+        });
+        return fragment_view;
+    }
+    public void checkSignIn(){
+        Log.i("Hachiman","Checking previous SignIn");
+        try{
+            //File prev_login = new File(getContext().getFilesDir(),"prev_login.json");
+            FileInputStream prev_login = getContext().openFileInput("prev_login.json");
+            int i;StringBuffer stringBuffer=new StringBuffer();
+            while ((i=prev_login.read())!=-1){
+                stringBuffer.append((char)i);
+            }
+            String readData = stringBuffer.toString();
+            JSONObject readJSON = new JSONObject(readData);
+            requireActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Bundle bundle = new Bundle();
+                    bundle.putString("username",readJSON.optString("username"));
+                    bundle.putString("auth_token",readJSON.optString("token"));
+                    navController.navigate(R.id.action_loginFragment_to_homeFragment,bundle);
+                }
+            });
+        }catch (Exception e) {
+            Log.e("Hachiman","FileRead",e);
+            requireActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    button_list.setVisibility(View.VISIBLE);
+                    spinner.setVisibility(View.GONE);
+                }
+            });
+        }
     }
     public void runOutside(int res){
         getActivity().runOnUiThread(new Runnable() {

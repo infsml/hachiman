@@ -5,12 +5,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.navigation.NavController;
 import androidx.recyclerview.widget.RecyclerView;
-
 
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
@@ -59,8 +57,9 @@ public class HomeListAdapter extends RecyclerView.Adapter<HomeListAdapter.ViewHo
     @Override
     public void onBindViewHolder(@NonNull @NotNull ViewHolder holder, int position) {
         JSONObject jsonObject = items.optJSONObject(position);
-        holder.putText(jsonObject.optJSONObject("code").optString("S"));
-        holder.value=jsonObject.optJSONObject("code").optString("S");
+        String code = jsonObject.optString("code");
+        holder.putText(code);
+        holder.value=code;
     }
     public void loadData(JSONArray jsonArray){
         items=jsonArray;

@@ -1,17 +1,6 @@
 package com.infsml.hachiman;
 
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.core.view.MenuHost;
-import androidx.core.view.MenuProvider;
-import androidx.fragment.app.Fragment;
-import androidx.navigation.NavActionBuilder;
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -19,27 +8,18 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.Spinner;
-import android.widget.TextView;
 
-import com.amplifyframework.auth.AuthUserAttribute;
-import com.amplifyframework.auth.cognito.AWSCognitoAuthSession;
-import com.amplifyframework.core.Amplify;
+import androidx.annotation.NonNull;
+import androidx.core.view.MenuProvider;
+import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.google.android.material.appbar.MaterialToolbar;
 
-import org.json.JSONArray;
 import org.json.JSONObject;
-
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 public class OptionFragment extends Fragment implements MenuProvider {
     NavController navController;
@@ -49,6 +29,9 @@ public class OptionFragment extends Fragment implements MenuProvider {
     String event=null;
     Bundle bundle;
     MenuProvider _this;
+
+    boolean alternate_option;
+
     public OptionFragment() {
     }
     public static OptionFragment newInstance(String param1, String param2) {
@@ -71,29 +54,33 @@ public class OptionFragment extends Fragment implements MenuProvider {
         _this=this;
         View fragment_view =inflater.inflate(R.layout.fragment_option, container, false);
         navController = Navigation.findNavController(requireActivity(),R.id.fragmentContainerView);
-        bundle = getArguments();
-        if(bundle==null){
-            navController.navigate(R.id.action_optionFragment_to_loginFragment);
-            return fragment_view;
-        }
-        username=bundle.getString("username");
-        auth_token=bundle.getString("auth_token");
-        event = bundle.getString("event");
-        if(username==null||auth_token==null){
-            navController.navigate(R.id.action_optionFragment_to_loginFragment);
-            return fragment_view;
-        }
-        if(event==null){
-            navController.navigate(R.id.action_optionFragment_to_homeFragment,bundle);
-            return fragment_view;
-        }
+        if(!loadBundle())return fragment_view;
         fetchUserData();
         recyclerView = fragment_view.findViewById(R.id.options_recycler_view);
         recyclerView.setAdapter(new OptionListAdapter(navController,bundle));
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         return fragment_view;
     }
-
+    private boolean loadBundle(){
+        bundle = getArguments();
+        if(bundle==null){
+            navController.navigate(R.id.action_optionFragment_to_loginFragment);
+            return false;
+        }
+        username=bundle.getString("username");
+        auth_token=bundle.getString("auth_token");
+        event = bundle.getString("event");
+        if(username==null||auth_token==null){
+            navController.navigate(R.id.action_optionFragment_to_loginFragment);
+            return false;
+        }
+        if(event==null){
+            navController.navigate(R.id.action_optionFragment_to_homeFragment,bundle);
+            return false;
+        }
+        alternate_option=bundle.getBoolean("alternate_option",false);
+        return true;
+    }
     @Override
     public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater menuInflater) {
         menuInflater.inflate(R.menu.fragment_option_menu,menu);
@@ -110,7 +97,7 @@ public class OptionFragment extends Fragment implements MenuProvider {
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run(){
-                Log.i("Hachiman","state:"+jsonArray.optInt("state"));
+                /*Log.i("Hachiman","state:"+jsonArray.optInt("state"));
                 if(jsonArray.optInt("state")==StateCodes.state_invalid_login){
                     navController.navigate(R.id.action_optionFragment_to_loginFragment);
                     return;
@@ -129,7 +116,7 @@ public class OptionFragment extends Fragment implements MenuProvider {
                     bundle1.putBoolean("registered",true);
                     navController.navigate(R.id.action_optionFragment_to_registerFragment2,bundle1);
                     return;
-                }
+                }*/
                 OptionListAdapter adapter = (OptionListAdapter) recyclerView.getAdapter();
                 adapter.loadData(jsonArray.optJSONArray("data"));
                 Log.i("Hachiman",username);
@@ -146,10 +133,10 @@ public class OptionFragment extends Fragment implements MenuProvider {
                 try {
                     JSONObject payload = new JSONObject();
                     payload.put("event",event);
-                    payload.put("usn",username);
+                    payload.put("username",username);
                     payload.put("auth_token",auth_token);
                     JSONObject jsonObject = Utility.postJSON(
-                        "https://api.infsml.in/hachiman/get-option/",
+                        Utility.api_base+"/get-option",
                         payload.toString()
                     );
                     chViewOutside(jsonObject);

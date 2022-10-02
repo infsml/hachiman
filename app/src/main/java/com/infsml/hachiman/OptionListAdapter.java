@@ -23,14 +23,24 @@ public class OptionListAdapter extends RecyclerView.Adapter<OptionListAdapter.Vi
         String available;
         View itemView;
         TextView mainText;
+        View expand_layout;
+        boolean expanded;
         public ViewHolder(
                 @NonNull @NotNull View itemView,
                 NavController controller,
                 Bundle bundle) {
             super(itemView);
             this.itemView = itemView;
-            mainText = itemView.findViewById(R.id.textView);
+            mainText = itemView.findViewById(R.id.title);
             View view = itemView.findViewById(R.id.parent_layout);
+            expand_layout = itemView.findViewById(R.id.expand_layout);
+            expanded=true;
+            view.setOnClickListener(v->{
+                if(expanded)expand_layout.setVisibility(View.VISIBLE);
+                else expand_layout.setVisibility(View.GONE);
+                expanded=!expanded;
+            });
+            view = itemView.findViewById(R.id.button7);
             view.setOnClickListener(v->{
                 bundle.putString("code",value);
                 bundle.putString("available",available);
@@ -53,7 +63,7 @@ public class OptionListAdapter extends RecyclerView.Adapter<OptionListAdapter.Vi
     public OptionListAdapter.ViewHolder onCreateViewHolder(@NonNull @NotNull ViewGroup parent, int viewType) {
         OptionListAdapter.ViewHolder viewHolder = new OptionListAdapter.ViewHolder(
                 LayoutInflater.from(parent.getContext())
-                        .inflate(R.layout.home_list_element,parent,false)
+                        .inflate(R.layout.option_list_element,parent,false)
                 ,controller,new Bundle(bundle));
         return viewHolder;
     }
@@ -61,9 +71,10 @@ public class OptionListAdapter extends RecyclerView.Adapter<OptionListAdapter.Vi
     @Override
     public void onBindViewHolder(@NonNull @NotNull OptionListAdapter.ViewHolder holder, int position) {
         JSONObject jsonObject = items.optJSONObject(position);
-        holder.putText(jsonObject.optJSONObject("code").optString("S"));
-        holder.value=jsonObject.optJSONObject("code").optString("S");
-        holder.available=jsonObject.optJSONObject("available").optString("N");
+        String code=jsonObject.optString("code");
+        holder.putText(code);
+        holder.value=code;
+        holder.available=""+jsonObject.optInt("availability");
     }
     public void loadData(JSONArray jsonArray){
         items=jsonArray;
