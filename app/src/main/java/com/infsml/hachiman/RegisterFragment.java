@@ -225,6 +225,7 @@ public class RegisterFragment extends Fragment {
                         navController.navigate(R.id.action_registerFragment_to_optionFragment,nw_bundle);
                     });
                 }
+
             }
         }
 
