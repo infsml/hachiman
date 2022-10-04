@@ -20,15 +20,20 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.appbar.MaterialToolbar;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
-public class HomeFragment extends Fragment implements MenuProvider{
+public class HomeFragment extends Fragment{
     NavController navController;
     RecyclerView recyclerView;
     String username=null;
     String auth_token=null;
     Bundle bundle=null;
-    MenuProvider _this;
+    int semester=-1;
+    String section=null;
+    String name=null;
+    int admin=-1;
+    JSONArray event_data;
     public HomeFragment() {
     }
     public static HomeFragment newInstance(String param1, String param2) {
@@ -48,10 +53,8 @@ public class HomeFragment extends Fragment implements MenuProvider{
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        _this=this;
         View fragment_view =inflater.inflate(R.layout.fragment_home, container, false);
         navController = Navigation.findNavController(getActivity(),R.id.fragmentContainerView);
-
         bundle = getArguments();
         if(bundle==null){
             navController.navigate(R.id.action_homeFragment_to_loginFragment);
@@ -63,11 +66,18 @@ public class HomeFragment extends Fragment implements MenuProvider{
             navController.navigate(R.id.action_homeFragment_to_loginFragment);
             return fragment_view;
         }
-        fetchUserData();
+        fetchUserAttributes(()->{
+            fetchUserData(()->{
+                HomeListAdapter adapter = (HomeListAdapter) recyclerView.getAdapter();
+                adapter.loadData(event_data);
+                Log.i("Hachiman",username);
+            });
+            MaterialToolbar toolbar = requireActivity().findViewById(R.id.materialToolbar);
+            toolbar.setTitle(username);
+        });
         recyclerView = fragment_view.findViewById(R.id.home_recycler_view);
         recyclerView.setAdapter(new HomeListAdapter(navController,bundle));
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-
         Button sign_out = fragment_view.findViewById(R.id.button3);
         sign_out.setOnClickListener(v -> {
             Log.i("AuthQuickStart","signing out XD");
@@ -106,8 +116,6 @@ public class HomeFragment extends Fragment implements MenuProvider{
                 HomeListAdapter adapter = (HomeListAdapter) recyclerView.getAdapter();
                 adapter.loadData(jsonArray.optJSONArray("data"));
                 Log.i("Hachiman",username);
-                MaterialToolbar toolbar = requireActivity().findViewById(R.id.materialToolbar);
-                toolbar.setTitle(username);
             }
         });
     }
@@ -119,21 +127,7 @@ public class HomeFragment extends Fragment implements MenuProvider{
             }
         });
     }
-
-    @Override
-    public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater menuInflater) {
-        menuInflater.inflate(R.menu.normal_menu,menu);
-    }
-
-    @Override
-    public boolean onMenuItemSelected(@NonNull MenuItem menuItem) {
-        if(menuItem.getItemId()==R.id.add_event){
-            navController.navigate(R.id.action_homeFragment_to_addEventFragment,bundle);
-        }
-        return true;
-    }
-
-    public void fetchUserData(){
+    public void fetchUserAttributes(Runnable runnable){
         (new Thread(){
             @Override
             public void run() {
@@ -142,12 +136,38 @@ public class HomeFragment extends Fragment implements MenuProvider{
                     payload.put("username",username);
                     payload.put("auth_token",auth_token);
                     JSONObject jsonObject = Utility.postJSON(
+                            Utility.api_base+"/user-attr",
+                            payload.toString()
+                    );
+                    semester = jsonObject.getInt("semester");
+                    section = jsonObject.getString("section");
+                    admin = jsonObject.getInt("admin");
+                    name=jsonObject.getString("name");
+                    requireActivity().runOnUiThread(runnable);
+                }catch (Exception e){
+                    Log.e("Hachiman","Detail Error",e);
+                }
+            }
+        }).start();
+    }
+    public void fetchUserData(Runnable runnable){
+        (new Thread(){
+            @Override
+            public void run() {
+                try {
+                    JSONObject payload = new JSONObject();
+                    payload.put("username",username);
+                    payload.put("auth_token",auth_token);
+                    payload.put("semester",semester);
+                    JSONObject jsonObject = Utility.postJSON(
                         Utility.api_base+"/get-event",
                         payload.toString()
                     );
-                    chViewOutside(jsonObject);
+                    //chViewOutside(jsonObject);
+                    event_data = jsonObject.getJSONArray("data");
+                    requireActivity().runOnUiThread(runnable);
                 }catch (Exception e){
-                    Log.e("Hachiman","Error",e);
+                    Log.e("Hachiman","Data Error",e);
                 }
             }
         }).start();

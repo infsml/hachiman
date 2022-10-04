@@ -22,4 +22,6 @@
     <string name="signing_out">Signing Out...</string>
     <string name="name">Name</string>
     <string name="code">Code</string>
+    <string name="sem">Sem</string>
+    <string name="choose">Choose</string>
 </resources>

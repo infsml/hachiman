@@ -31,7 +31,7 @@ public class HomeListAdapter extends RecyclerView.Adapter<HomeListAdapter.ViewHo
             View view = itemView.findViewById(R.id.parent_layout);
             view.setOnClickListener(v->{
                 bundle.putString("event",value);
-                controller.navigate(R.id.action_homeFragment_to_optionFragment,bundle);
+                controller.navigate(R.id.action_homeFragment_to_registerFragment,bundle);
             });
         }
         public void putText(String text){
