@@ -9,6 +9,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.core.view.MenuProvider;
@@ -20,6 +21,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.appbar.MaterialToolbar;
 
+import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -85,18 +87,38 @@ public class HomeFragment extends Fragment{
             b.setText(R.string.signing_out);
             b.setClickable(false);
             b.setEnabled(false);
-            try{
-
-            }catch (Exception e) {
-                requireActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        b.setText(R.string.signout);
-                        b.setClickable(true);
-                        b.setEnabled(true);
+            (new Thread() {
+                @Override
+                public void run() {
+                    try {
+                        JSONObject payload = new JSONObject();
+                        payload.put("username", username);
+                        payload.put("auth_token", auth_token);
+                        JSONObject jsonObject = Utility.postJSON(
+                                Utility.api_base + "/logout",
+                                payload.toString()
+                        );
+                        requireActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Bundle logout = new Bundle();
+                                logout.putBoolean("logout",true);
+                                navController.navigate(R.id.action_homeFragment_to_loginFragment,logout);
+                            }
+                        });
+                    } catch (Exception e) {
+                        Log.e("Hachiman","Logout Error",e);
+                        requireActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                b.setText(R.string.signout);
+                                b.setClickable(true);
+                                b.setEnabled(true);
+                            }
+                        });
                     }
-                });
-            }
+                }
+            }).start();
         });
         return fragment_view;
     }
@@ -146,6 +168,14 @@ public class HomeFragment extends Fragment{
                     requireActivity().runOnUiThread(runnable);
                 }catch (Exception e){
                     Log.e("Hachiman","Detail Error",e);
+                    requireActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Bundle logout = new Bundle();
+                            logout.putBoolean("logout",true);
+                            navController.navigate(R.id.action_homeFragment_to_loginFragment,logout);
+                        }
+                    });
                 }
             }
         }).start();
@@ -171,5 +201,64 @@ public class HomeFragment extends Fragment{
                 }
             }
         }).start();
+    }
+    public class HomeListAdapter extends RecyclerView.Adapter<HomeListAdapter.ViewHolder> {
+        JSONArray items;
+        NavController controller;
+        Bundle bundle;
+        class ViewHolder extends RecyclerView.ViewHolder{
+            TextView mainText;
+            String value;
+            public ViewHolder(
+                    @NonNull @NotNull View itemView,
+                    NavController controller,
+                    Bundle bundle) {
+                super(itemView);
+                mainText = itemView.findViewById(R.id.textView);
+                View view = itemView.findViewById(R.id.parent_layout);
+                view.setOnClickListener(v->{
+                    bundle.putString("event",value);
+                    bundle.putString("name",name);
+                    bundle.putInt("semester",semester);
+                    bundle.putString("section",section);
+                    bundle.putInt("admin",admin);
+                    controller.navigate(R.id.action_homeFragment_to_registerFragment,bundle);
+                });
+            }
+            public void putText(String text){
+                mainText.setText(text);
+            }
+        }
+        public HomeListAdapter(NavController controller, Bundle bundle){
+            items = new JSONArray();
+            this.controller=controller;
+            this.bundle=bundle;
+        }
+        @NonNull
+        @NotNull
+        @Override
+        public ViewHolder onCreateViewHolder(@NonNull @NotNull ViewGroup parent, int viewType) {
+            ViewHolder viewHolder = new ViewHolder(
+                    LayoutInflater.from(parent.getContext())
+                            .inflate(R.layout.home_list_element,parent,false)
+                    ,controller,new Bundle(bundle));
+            return viewHolder;
+        }
+
+        @Override
+        public void onBindViewHolder(@NonNull @NotNull ViewHolder holder, int position) {
+            JSONObject jsonObject = items.optJSONObject(position);
+            String code = jsonObject.optString("code");
+            holder.putText(code);
+            holder.value=code;
+        }
+        public void loadData(JSONArray jsonArray){
+            items=jsonArray;
+            notifyDataSetChanged();
+        }
+        @Override
+        public int getItemCount() {
+            return items.length();
+        }
     }
 }
