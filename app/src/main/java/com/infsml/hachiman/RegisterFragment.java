@@ -14,7 +14,10 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.Spinner;
+import android.widget.SpinnerAdapter;
 import android.widget.TextView;
 
 import org.json.JSONArray;
@@ -34,9 +37,12 @@ public class RegisterFragment extends Fragment {
     String auth_token = null;
     String event = null;
     RegisterFragmentAdapter adapter;
-    String code = null;
+    int semester;
+    String section;
+    String name;
+    int admin;
     String url_link_default = Utility.api_base + "/register";
-    boolean isAdmin = false;
+
     Bundle bundle;
 
     public RegisterFragment() {
@@ -69,9 +75,11 @@ public class RegisterFragment extends Fragment {
         }
         username = bundle.getString("username");
         auth_token = bundle.getString("auth_token");
-        isAdmin = bundle.getBoolean("isAdmin", false);
         event = bundle.getString("event");
-        boolean registered = bundle.getBoolean("registered");
+        name = bundle.getString("name",name);
+        semester = bundle.getInt("semester",semester);
+        section = bundle.getString("section",section);
+        admin = bundle.getInt("admin",admin);
         Log.i("Hachiman", bundle.toString());
         if (username == null || auth_token == null) {
             navController.navigate(R.id.action_registerFragment_to_loginFragment);
@@ -87,9 +95,10 @@ public class RegisterFragment extends Fragment {
         spinner.setVisibility(View.GONE);
         List<ListItemHolder> objectList = new ArrayList<>();
         objectList.add(new ListItemHolder("USN", username, 0));
-        objectList.add(new ListItemHolder("Name", "Infinitely Small", 0));
-        objectList.add(new ListItemHolder("Sem", "7", 0));
-        //objectList.add(new ListItemHolder("Course", "", 1));
+        objectList.add(new ListItemHolder("Name", name, 0));
+        objectList.add(new ListItemHolder("Sem", ""+semester, 0));
+        objectList.add(new ListItemHolder("Sec", section, 0));
+        objectList.add(new ListItemHolder("Prev Course", "", 2));
 
         Button register_button = fragment_view.findViewById(R.id.button5);
         /*if(registered){
@@ -134,6 +143,26 @@ public class RegisterFragment extends Fragment {
             }).start();
         });*/
 
+        List<ListItemHolder> requiredList = new ArrayList<>();
+        requiredList.add(new ListItemHolder("Prev Course","[\"Hehe boi\",\"lamo\",\"noob\"]",2));
+        requiredList.add(new ListItemHolder("Prev Course 2","[\"Hehe boi\",\"lamo\",\"noob\"]",2));
+        requiredList.add(new ListItemHolder("First Choice","",1));
+        requiredList.add(new ListItemHolder("Second Choice","dunno",1));
+        String formData = bundle.getString("formData");
+        int i=0;
+        if(formData!=null){
+            try{
+                JSONArray formArray = new JSONArray(formData);
+                for(i=0;i<formArray.length();i++){
+                    JSONObject elem = formArray.getJSONObject(i);
+                    objectList.add(new ListItemHolder(elem.getString("name"),elem.getString("val"),elem.getInt("type")));
+                }
+                if(i<requiredList.size())objectList.add(requiredList.get(i));
+            }catch (Exception e){
+                Log.e("Hachiman","Form Data Exception",e);
+                if(i<requiredList.size())objectList.add(requiredList.get(i));
+            }
+        }
         Button cancel_button = fragment_view.findViewById(R.id.button6);
         cancel_button.setOnClickListener(v -> {
             navController.popBackStack();
@@ -199,6 +228,7 @@ public class RegisterFragment extends Fragment {
 
         public class ViewHolder extends RecyclerView.ViewHolder {
             Button choose;
+            Spinner spinner;
             TextView val;
             TextView label;
             String val_str;
@@ -208,16 +238,19 @@ public class RegisterFragment extends Fragment {
                 choose = itemView.findViewById(R.id.choose);
                 val = itemView.findViewById(R.id.val);
                 label = itemView.findViewById(R.id.label);
+                spinner = itemView.findViewById(R.id.spinner2);
             }
 
             public void setType(int type) {
                 if (type == 0) {
                     choose.setVisibility(View.GONE);
                     val.setVisibility(View.VISIBLE);
+                    spinner.setVisibility(View.GONE);
                 }
                 if (type == 1) {
                     val.setVisibility(View.GONE);
                     choose.setVisibility(View.VISIBLE);
+                    spinner.setVisibility(View.GONE);
                     choose.setOnClickListener(v -> {
                         Bundle nw_bundle = new Bundle(bundle);
                         nw_bundle.putString("optionData",val_str);
@@ -226,6 +259,12 @@ public class RegisterFragment extends Fragment {
                     });
                 }
                 if(type == 2){
+                    val.setVisibility(View.GONE);
+                    choose.setVisibility(View.GONE);
+                    spinner.setVisibility(View.VISIBLE);
+                    String[] lamo = {"Noob","Caim","Camui"};
+                    ArrayAdapter<String> adapter = new ArrayAdapter<String>(requireContext(), android.R.layout.simple_spinner_dropdown_item,lamo);
+                    spinner.setAdapter(adapter);
 
                 }
             }

@@ -19,6 +19,7 @@ public class SignupFragment extends Fragment {
     TextView msgBox;
     TextView usn;
     TextView section;
+    TextView semester;
     TextView email;
     TextView password;
     TextView confirm_password;
@@ -52,6 +53,7 @@ public class SignupFragment extends Fragment {
         msgBox=fragment_view.findViewById(R.id.textView3);
         usn = fragment_view.findViewById(R.id.USN);
         section = fragment_view.findViewById(R.id.section);
+        semester = fragment_view.findViewById(R.id.semester);
         email = fragment_view.findViewById(R.id.email);
         password=fragment_view.findViewById(R.id.PASSWORD);
         confirm_password=fragment_view.findViewById(R.id.confirm_password);
@@ -61,6 +63,7 @@ public class SignupFragment extends Fragment {
             String usn_s = usn.getText().toString();
             String email_s=email.getText().toString();
             String section_s=section.getText().toString();
+            String sem_s=semester.getText().toString();
             String password_s=password.getText().toString();
             String password_confirm_s=confirm_password.getText().toString();
             if(!Pattern.matches("^\\d\\w{2}\\d{2}\\w{2}\\d{3}$",usn_s.toLowerCase())){
@@ -72,6 +75,9 @@ public class SignupFragment extends Fragment {
             if(!Pattern.matches("^[A-Z]$",section_s)){
                 giveMsg("Enter valid section");return;
             }
+            if(!Pattern.matches("^[1-8]$",sem_s)){
+                giveMsg("Enter valid semester");return;
+            }
             if(Pattern.matches("^[^a-zA-Z]*$",password_s)||Pattern.matches("^\\D*$",password_s)){
                 giveMsg("Password should contain both letters and numbers");return;
             }
@@ -81,6 +87,7 @@ public class SignupFragment extends Fragment {
             if(!password_s.equals(password_confirm_s)){
                 giveMsg("Passwords must match");return;
             }
+
             /*List<AuthUserAttribute>attributeList=new ArrayList<>();
             attributeList.add(new AuthUserAttribute(AuthUserAttributeKey.custom("custom:custom:section"),section.getText().toString()));
             attributeList.add(new AuthUserAttribute(AuthUserAttributeKey.email(),email.getText().toString()));

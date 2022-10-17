@@ -96,6 +96,11 @@
             android:id="@+id/action_registerFragment_to_optionFragment"
             app:destination="@id/optionFragment"
             app:popUpToInclusive="false" />
+        <action
+            android:id="@+id/action_registerFragment_self"
+            app:destination="@id/registerFragment"
+            app:popUpTo="@id/registerFragment"
+            app:popUpToInclusive="true" />
     </fragment>
     <fragment
         android:id="@+id/addOptionFragment"

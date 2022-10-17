@@ -57,7 +57,20 @@ public class LoginFragment extends Fragment {
             navController.navigate(R.id.action_loginFragment_to_signupFragment);
         });
         Button login_button = fragment_view.findViewById(R.id.button2);
-        checkSignIn();
+        Bundle args = getArguments();
+        try {
+            if (args != null) {
+                if (args.getBoolean("logout", false)) {
+                    FileOutputStream prev_login = getContext().openFileOutput("prev_login.json", Context.MODE_PRIVATE);
+                    prev_login.write("".getBytes(StandardCharsets.UTF_8));
+                    prev_login.flush();
+                    prev_login.close();
+                }
+            }
+            checkSignIn();
+        }catch (Exception e){
+            Log.e("Hachiman","Log out command exception",e);
+        }
         login_button.setOnClickListener((v)->{
             button_list.setVisibility(View.GONE);
             spinner.setVisibility(View.VISIBLE);
@@ -74,6 +87,8 @@ public class LoginFragment extends Fragment {
                         saveData.put("token",res.optString("token"));
                         FileOutputStream prev_login = getContext().openFileOutput("prev_login.json", Context.MODE_PRIVATE);
                         prev_login.write(saveData.toString().getBytes(StandardCharsets.UTF_8));
+                        prev_login.flush();
+                        prev_login.close();
                         requireActivity().runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
@@ -109,12 +124,14 @@ public class LoginFragment extends Fragment {
             }
             String readData = stringBuffer.toString();
             JSONObject readJSON = new JSONObject(readData);
+            String uname = readJSON.getString("username");
+            String token = readJSON.getString("token");
             requireActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
                     Bundle bundle = new Bundle();
-                    bundle.putString("username",readJSON.optString("username"));
-                    bundle.putString("auth_token",readJSON.optString("token"));
+                    bundle.putString("username",uname);
+                    bundle.putString("auth_token",token);
                     navController.navigate(R.id.action_loginFragment_to_homeFragment,bundle);
                 }
             });
