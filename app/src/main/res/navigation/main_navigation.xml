@@ -18,6 +18,11 @@
             app:destination="@id/homeFragment"
             app:popUpTo="@id/loginFragment"
             app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_loginFragment_to_adminHomeFragment"
+            app:destination="@id/adminHomeFragment"
+            app:popUpTo="@id/loginFragment"
+            app:popUpToInclusive="true" />
     </fragment>
     <fragment
         android:id="@+id/signupFragment"
@@ -107,4 +112,77 @@
         android:name="com.infsml.hachiman.AddOptionFragment"
         android:label="fragment_add_option"
         tools:layout="@layout/fragment_add_option" />
+    <fragment
+        android:id="@+id/adminHomeFragment"
+        android:name="com.infsml.hachiman.admin.AdminHomeFragment"
+        android:label="fragment_admin_home"
+        tools:layout="@layout/fragment_admin_home" >
+        <action
+            android:id="@+id/action_adminHomeFragment_to_loginFragment"
+            app:destination="@id/loginFragment"
+            app:popUpTo="@id/adminHomeFragment"
+            app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_adminHomeFragment_to_adminOptionFragment"
+            app:destination="@id/adminOptionFragment" />
+        <action
+            android:id="@+id/action_adminHomeFragment_to_adminAddEventFragment"
+            app:destination="@id/adminAddEventFragment"
+            app:popUpTo="@id/adminHomeFragment"
+            app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_adminHomeFragment_self"
+            app:destination="@id/adminHomeFragment"
+            app:popUpTo="@id/adminHomeFragment"
+            app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_adminHomeFragment_to_adminCsvEventFragment"
+            app:destination="@id/adminCsvEventFragment"
+            app:popUpTo="@id/adminHomeFragment"
+            app:popUpToInclusive="true" />
+    </fragment>
+    <fragment
+        android:id="@+id/adminOptionFragment"
+        android:name="com.infsml.hachiman.admin.AdminOptionFragment"
+        android:label="fragment_admin_option"
+        tools:layout="@layout/fragment_admin_option" >
+        <action
+            android:id="@+id/action_adminOptionFragment_to_adminAddOptionFragment"
+            app:destination="@id/adminAddOptionFragment"
+            app:popUpTo="@id/adminOptionFragment"
+            app:popUpToInclusive="true" />
+    </fragment>
+    <fragment
+        android:id="@+id/adminAddEventFragment"
+        android:name="com.infsml.hachiman.admin.AdminAddEventFragment"
+        android:label="fragment_admin_add_event"
+        tools:layout="@layout/fragment_admin_add_event" >
+        <action
+            android:id="@+id/action_adminAddEventFragment_to_adminHomeFragment"
+            app:destination="@id/adminHomeFragment"
+            app:popUpTo="@id/adminAddEventFragment"
+            app:popUpToInclusive="true" />
+    </fragment>
+    <fragment
+        android:id="@+id/adminAddOptionFragment"
+        android:name="com.infsml.hachiman.admin.AdminAddOptionFragment"
+        android:label="fragment_admin_add_option"
+        tools:layout="@layout/fragment_admin_add_option" >
+        <action
+            android:id="@+id/action_adminAddOptionFragment_to_adminOptionFragment"
+            app:destination="@id/adminOptionFragment"
+            app:popUpTo="@id/adminAddOptionFragment"
+            app:popUpToInclusive="true" />
+    </fragment>
+    <fragment
+        android:id="@+id/adminCsvEventFragment"
+        android:name="com.infsml.hachiman.admin.AdminCsvEventFragment"
+        android:label="fragment_admin_csv_event"
+        tools:layout="@layout/fragment_admin_csv_event" >
+        <action
+            android:id="@+id/action_adminCsvEventFragment_to_adminHomeFragment"
+            app:destination="@id/adminHomeFragment"
+            app:popUpTo="@id/adminCsvEventFragment"
+            app:popUpToInclusive="true" />
+    </fragment>
 </navigation>

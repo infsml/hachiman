@@ -25,4 +25,15 @@
     <string name="sem">Sem</string>
     <string name="choose">Choose</string>
     <string name="semester">SEMESTER</string>
+    <string name="sec">Section</string>
+    <string name="previous_course">Previous Course</string>
+    <string name="first_choice">First Choice</string>
+    <string name="second_choice">Second Choice</string>
+    <string name="third_choice">Third Choice</string>
+    <string name="available">Available</string>
+    <string name="name_cap">NAME</string>
+    <string-array name="previous_and_current">
+        <item>Previous</item>
+        <item>Current</item>
+    </string-array>
 </resources>

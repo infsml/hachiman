@@ -19,10 +19,14 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.appbar.MaterialToolbar;
+import com.infsml.hachiman.databinding.OptionListElementBinding;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class OptionFragment extends Fragment {
     NavController navController;
@@ -32,7 +36,7 @@ public class OptionFragment extends Fragment {
     String event = null;
     Bundle bundle;
     MenuProvider _this;
-    String requirement_for=null;
+    int require;
     boolean alternate_option;
 
     public OptionFragment() {
@@ -50,6 +54,7 @@ public class OptionFragment extends Fragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
         }
+
     }
 
     @Override
@@ -58,15 +63,12 @@ public class OptionFragment extends Fragment {
         View fragment_view = inflater.inflate(R.layout.fragment_option, container, false);
         navController = Navigation.findNavController(requireActivity(), R.id.fragmentContainerView);
         bundle = getArguments();
-        JSONArray items;
+        List<String> items;
         Log.i("Hachiman",bundle.toString());
-        try {
-            items = new JSONArray(bundle.getString("optionData"));
-            requirement_for = bundle.getString("requirement_for");
-        } catch (JSONException e) {
-            Log.e("Hachiman","JSONArray Error",e);
-            items = new JSONArray();
-        }
+        items = bundle.getStringArrayList("options");
+        if(items==null)items=new ArrayList<String>();
+        require = bundle.getInt("require");
+        ResultTransmission.result=ResultTransmission.prev;
         recyclerView = fragment_view.findViewById(R.id.options_recycler_view);
         recyclerView.setAdapter(new OptionListAdapter(items));
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -74,63 +76,68 @@ public class OptionFragment extends Fragment {
     }
 
     class OptionListAdapter extends RecyclerView.Adapter<OptionListAdapter.ViewHolder> {
-        JSONArray items;
+        List<JSONObject> items;
 
         class ViewHolder extends RecyclerView.ViewHolder {
             String value;
             String available;
-            View itemView;
-            TextView mainText;
-            View expand_layout;
+            OptionListElementBinding elementBinding;
             boolean expanded;
 
-            public ViewHolder(@NonNull View itemView) {
-                super(itemView);
-                this.itemView = itemView;
-                mainText = itemView.findViewById(R.id.title);
-                View view = itemView.findViewById(R.id.parent_layout);
-                expand_layout = itemView.findViewById(R.id.expand_layout);
+            public ViewHolder(@NonNull OptionListElementBinding elementBinding) {
+                super(elementBinding.getRoot());
+                this.elementBinding = elementBinding;
                 expanded = true;
-                view.setOnClickListener(v -> {
-                    if (expanded) expand_layout.setVisibility(View.VISIBLE);
-                    else expand_layout.setVisibility(View.GONE);
+                elementBinding.parentLayout.setOnClickListener(v -> {
+                    if (expanded) elementBinding.expandLayout.setVisibility(View.VISIBLE);
+                    else elementBinding.expandLayout.setVisibility(View.GONE);
                     expanded = !expanded;
                 });
-                view = itemView.findViewById(R.id.button7);
-                view.setOnClickListener(v -> {
-                    Bundle bundle1 = new Bundle(bundle);
-                    bundle1.putString(requirement_for, value);
-                    navController.navigate(R.id.action_optionFragment_to_registerFragment, bundle1);
+                elementBinding.button7.setOnClickListener(v -> {
+                    ResultTransmission.result=require;
+                    ResultTransmission.value = value;
+                    ResultTransmission.prev=require;
+                    navController.popBackStack();
                 });
             }
             public void putText(String text){
-                mainText.setText(text);
+                elementBinding.title.setText(text);
             }
         }
 
-        public OptionListAdapter(JSONArray items) {
-            this.items=items;
+        public OptionListAdapter(List<String> items) {
+            this.items=new ArrayList<>();
+            for(int i=0;i<items.size();i++){
+                try {
+                    this.items.add(new JSONObject(items.get(i)));
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
         }
 
         @NonNull
         @Override
         public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.option_list_element,parent,false);
-            return new ViewHolder(view);
+            //View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.option_list_element,parent,false);
+            OptionListElementBinding listElementBinding = OptionListElementBinding.inflate(LayoutInflater.from(parent.getContext()),parent,false);
+            return new ViewHolder(listElementBinding);
         }
 
         @Override
         public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-            JSONObject jsonObject = items.optJSONObject(position);
+            JSONObject jsonObject = items.get(position);
             String code=jsonObject.optString("code");
-            holder.putText(code);
+            holder.elementBinding.title.setText(code+"-"+jsonObject.optString("name"));
             holder.value=code;
-            holder.available=""+jsonObject.optInt("availability");
+            holder.elementBinding.code.setText(code);
+            holder.elementBinding.name.setText(jsonObject.optString("name"));
+            holder.elementBinding.available.setText(""+jsonObject.optInt("availability"));
         }
 
         @Override
         public int getItemCount() {
-            return items.length();
+            return items.size();
         }
     }
 }

@@ -18,7 +18,7 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
 public class Utility {
-    public static final String api_base="https://192.168.1.7:8080";
+    public static final String api_base="https://192.168.152.237:8080";
     public static JSONObject postJSON(String url_link,String jsonString) throws Exception{
         TrustManager[] trustAllCerts = new TrustManager[] {new X509TrustManager() {
             public java.security.cert.X509Certificate[] getAcceptedIssuers() {

@@ -1,28 +1,28 @@
 package com.infsml.hachiman;
 
+import android.content.Context;
 import android.os.Bundle;
-import android.util.Patterns;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
+import com.infsml.hachiman.databinding.FragmentSignupBinding;
+
+import org.json.JSONObject;
+
+import java.io.FileOutputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.regex.Pattern;
 
 public class SignupFragment extends Fragment {
     NavController navController;
-    TextView msgBox;
-    TextView usn;
-    TextView section;
-    TextView semester;
-    TextView email;
-    TextView password;
-    TextView confirm_password;
+
     public SignupFragment() {
     }
 
@@ -39,38 +39,34 @@ public class SignupFragment extends Fragment {
         if (getArguments() != null) {
         }
     }
-
+    FragmentSignupBinding binding;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View fragment_view =inflater.inflate(R.layout.fragment_signup, container, false);
-        Button cancel_button = fragment_view.findViewById(R.id.button);
+        binding = FragmentSignupBinding.inflate(inflater,container,false);
+        //View fragment_view =inflater.inflate(R.layout.fragment_signup, container, false);
+
         navController = Navigation.findNavController(getActivity(),R.id.fragmentContainerView);
-        cancel_button.setOnClickListener((v)->{
-            navController.navigate(R.id.action_signupFragment_to_loginFragment);
+        binding.cancelButton.setOnClickListener((v)->{
+            navController.popBackStack();
         });
-
-        msgBox=fragment_view.findViewById(R.id.textView3);
-        usn = fragment_view.findViewById(R.id.USN);
-        section = fragment_view.findViewById(R.id.section);
-        semester = fragment_view.findViewById(R.id.semester);
-        email = fragment_view.findViewById(R.id.email);
-        password=fragment_view.findViewById(R.id.PASSWORD);
-        confirm_password=fragment_view.findViewById(R.id.confirm_password);
-
-        Button signup_button = fragment_view.findViewById(R.id.button2);
-        signup_button.setOnClickListener((v)->{
-            String usn_s = usn.getText().toString();
-            String email_s=email.getText().toString();
-            String section_s=section.getText().toString();
-            String sem_s=semester.getText().toString();
-            String password_s=password.getText().toString();
-            String password_confirm_s=confirm_password.getText().toString();
+        binding.progressBar.setVisibility(View.GONE);
+        binding.registerButton.setOnClickListener((v)->{
+            String usn_s = binding.usn.getText().toString();
+            String email_s=binding.email.getText().toString();
+            String name_s = binding.nameInput.getText().toString();
+            String section_s=binding.section.getText().toString();
+            String sem_s=binding.semester.getText().toString();
+            String password_s=binding.password.getText().toString();
+            String password_confirm_s=binding.confirmPassword.getText().toString();
             if(!Pattern.matches("^\\d\\w{2}\\d{2}\\w{2}\\d{3}$",usn_s.toLowerCase())){
                 giveMsg("Enter valid usn");return;
             };
-            if(!Patterns.EMAIL_ADDRESS.matcher(email_s).matches()){
+            /*if(!Patterns.EMAIL_ADDRESS.matcher(email_s).matches()){
                 giveMsg("Enter valid email");return;
+            }*/
+            if(!Pattern.matches("^[a-zA-Z]+(([',. -][a-zA-Z ])?[a-zA-Z]*)*$",name_s)){
+                giveMsg("Enter valid name");return;
             }
             if(!Pattern.matches("^[A-Z]$",section_s)){
                 giveMsg("Enter valid section");return;
@@ -87,6 +83,38 @@ public class SignupFragment extends Fragment {
             if(!password_s.equals(password_confirm_s)){
                 giveMsg("Passwords must match");return;
             }
+            binding.constraintLayout2.setVisibility(View.GONE);
+            binding.progressBar.setVisibility(View.VISIBLE);
+            (new Thread(){
+                @Override
+                public void run(){
+                    try {
+                        JSONObject payload = new JSONObject();
+                        payload.put("username", usn_s);
+                        payload.put("password",password_s);
+                        payload.put("name",name_s);
+                        payload.put("semester",Integer.parseInt(sem_s));
+                        payload.put("section",section_s);
+                        JSONObject res = Utility.postJSON(Utility.api_base + "/signup", payload.toString());
+                        requireActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                navController.popBackStack();
+                            }
+                        });
+                    }catch (Exception e){
+                        Log.e("Hachiman","Signup Error",e);
+                        requireActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                binding.progressBar.setVisibility(View.GONE);
+                                binding.constraintLayout2.setVisibility(View.VISIBLE);
+                                giveMsg("Error Registering");
+                            }
+                        });
+                    }
+                }
+            }).start();
 
             /*List<AuthUserAttribute>attributeList=new ArrayList<>();
             attributeList.add(new AuthUserAttribute(AuthUserAttributeKey.custom("custom:custom:section"),section.getText().toString()));
@@ -102,10 +130,10 @@ public class SignupFragment extends Fragment {
             );*/
         });
 
-        return fragment_view;
+        return binding.getRoot();
     }
     public void giveMsg(String str){
-        msgBox.setText(str);
-        msgBox.setVisibility(View.VISIBLE);
+        binding.msgbox.setText(str);
+        binding.msgbox.setVisibility(View.VISIBLE);
     }
 }
