@@ -16,6 +16,7 @@ import com.infsml.hachiman.databinding.FragmentSignupBinding;
 
 import org.json.JSONObject;
 
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.regex.Pattern;
@@ -52,14 +53,14 @@ public class SignupFragment extends Fragment {
         });
         binding.progressBar.setVisibility(View.GONE);
         binding.registerButton.setOnClickListener((v)->{
-            String usn_s = binding.usn.getText().toString();
+            String usn_s = binding.usn.getText().toString().toUpperCase();
             String email_s=binding.email.getText().toString();
-            String name_s = binding.nameInput.getText().toString();
+            String name_s = binding.nameInput.getText().toString().trim();
             String section_s=binding.section.getText().toString();
             String sem_s=binding.semester.getText().toString();
             String password_s=binding.password.getText().toString();
             String password_confirm_s=binding.confirmPassword.getText().toString();
-            if(!Pattern.matches("^\\d\\w{2}\\d{2}\\w{2}\\d{3}$",usn_s.toLowerCase())){
+            if(!Pattern.matches("^\\d\\w{2}\\d{2}\\w{2}\\d{3}$",usn_s)){
                 giveMsg("Enter valid usn");return;
             };
             /*if(!Patterns.EMAIL_ADDRESS.matcher(email_s).matches()){
@@ -91,15 +92,25 @@ public class SignupFragment extends Fragment {
                     try {
                         JSONObject payload = new JSONObject();
                         payload.put("username", usn_s);
-                        payload.put("password",password_s);
-                        payload.put("name",name_s);
-                        payload.put("semester",Integer.parseInt(sem_s));
-                        payload.put("section",section_s);
+                        payload.put("password", PasswordHash.getHash(password_s));
+                        payload.put("name", name_s);
+                        payload.put("semester", Integer.parseInt(sem_s));
+                        payload.put("section", section_s);
                         JSONObject res = Utility.postJSON(Utility.api_base + "/signup", payload.toString());
                         requireActivity().runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
                                 navController.popBackStack();
+                            }
+                        });
+                    }catch (FileNotFoundException e){
+                        Log.e("Hachiman","Signup Error",e);
+                        requireActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                binding.progressBar.setVisibility(View.GONE);
+                                binding.constraintLayout2.setVisibility(View.VISIBLE);
+                                giveMsg("User Already Exists");
                             }
                         });
                     }catch (Exception e){
@@ -115,19 +126,6 @@ public class SignupFragment extends Fragment {
                     }
                 }
             }).start();
-
-            /*List<AuthUserAttribute>attributeList=new ArrayList<>();
-            attributeList.add(new AuthUserAttribute(AuthUserAttributeKey.custom("custom:custom:section"),section.getText().toString()));
-            attributeList.add(new AuthUserAttribute(AuthUserAttributeKey.email(),email.getText().toString()));
-            attributeList.add(new AuthUserAttribute(AuthUserAttributeKey.address(),"Somewhere around here"));
-
-            AuthSignUpOptions signUpOptions = AuthSignUpOptions.builder()
-                    .userAttributes(attributeList)
-                    .build();
-            Amplify.Auth.signUp(usn.getText().toString(),password.getText().toString(),signUpOptions,
-                    result-> Log.i("SignUP","Res : "+ result.toString()),
-                    error-> Log.e("SignUP","Err : ",error)
-            );*/
         });
 
         return binding.getRoot();

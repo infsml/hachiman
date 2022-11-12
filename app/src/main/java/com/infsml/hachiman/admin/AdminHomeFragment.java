@@ -34,10 +34,6 @@ public class AdminHomeFragment extends Fragment {
     String username=null;
     String auth_token=null;
     Bundle bundle=null;
-    int semester=-1;
-    String section=null;
-    String name=null;
-    int admin=-1;
     JSONObject event_data;
     public AdminHomeFragment() {
     }
@@ -63,33 +59,21 @@ public class AdminHomeFragment extends Fragment {
         binding = FragmentAdminHomeBinding.inflate(inflater,container,false);
         navController = Navigation.findNavController(getActivity(),R.id.fragmentContainerView);
         bundle = getArguments();
-        if(bundle==null){
-            navController.navigate(R.id.action_adminHomeFragment_to_loginFragment);
-            return binding.getRoot();
-        }
         username=bundle.getString("username");
         auth_token=bundle.getString("auth_token");
-        if(username==null||auth_token==null){
-            navController.navigate(R.id.action_adminHomeFragment_to_loginFragment);
-            return binding.getRoot();
-        }
         binding.addBtn.setOnClickListener(v -> {
             navController.navigate(R.id.action_adminHomeFragment_to_adminAddEventFragment,bundle);
         });
         binding.csvBtn.setOnClickListener(v->{
             navController.navigate(R.id.action_adminHomeFragment_to_adminCsvEventFragment,bundle);
         });
-        fetchUserAttributes(()->{
+
             fetchUserData(()->{
                 AdminHomeFragment.HomeListAdapter adapter = (AdminHomeFragment.HomeListAdapter) binding.homeRecyclerView.getAdapter();
                 adapter.loadData(event_data);
-                Log.i("Hachiman",username);
             });
             MaterialToolbar toolbar = requireActivity().findViewById(R.id.materialToolbar);
             toolbar.setTitle(username);
-        });
-        binding.homeRecyclerView.setAdapter(new AdminHomeFragment.HomeListAdapter(navController));
-        binding.homeRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         binding.signoutBtn.setOnClickListener(v -> {
             Log.i("AuthQuickStart","signing out XD");
             Button b = (Button) v;
@@ -129,39 +113,11 @@ public class AdminHomeFragment extends Fragment {
                 }
             }).start();
         });
+        binding.homeRecyclerView.setAdapter(new AdminHomeFragment.HomeListAdapter(navController));
+        binding.homeRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         return binding.getRoot();
     }
-    public void fetchUserAttributes(Runnable runnable){
-        (new Thread(){
-            @Override
-            public void run() {
-                try {
-                    JSONObject payload = new JSONObject();
-                    payload.put("username",username);
-                    payload.put("auth_token",auth_token);
-                    JSONObject jsonObject = Utility.postJSON(
-                            Utility.api_base+"/user-attr",
-                            payload.toString()
-                    );
-                    semester = jsonObject.getInt("semester");
-                    section = jsonObject.getString("section");
-                    admin = jsonObject.getInt("admin");
-                    name=jsonObject.getString("name");
-                    requireActivity().runOnUiThread(runnable);
-                }catch (Exception e){
-                    Log.e("Hachiman","Detail Error",e);
-                    requireActivity().runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Bundle logout = new Bundle();
-                            logout.putBoolean("logout",true);
-                            navController.navigate(R.id.action_adminHomeFragment_to_loginFragment,logout);
-                        }
-                    });
-                }
-            }
-        }).start();
-    }
+
     public void fetchUserData(Runnable runnable){
         (new Thread(){
             @Override
@@ -206,9 +162,9 @@ public class AdminHomeFragment extends Fragment {
                 binding2.coursesBtn.setOnClickListener(v->{
                     Bundle bundle1 = new Bundle(bundle);
                     bundle1.putString("event",code);
-                    navController.navigate(R.id.action_adminHomeFragment_to_adminOptionFragment,bundle1);
+                    navController.navigate(R.id.action_adminHomeFragment_to_adminPreHomeFragment,bundle1);
                 });
-
+                binding2.textView6.setVisibility(View.GONE);
                 binding2.deleteBtn.setOnClickListener(v->{
                     binding.homeRecyclerView.setVisibility(View.GONE);
                     (new Thread(){
@@ -224,7 +180,7 @@ public class AdminHomeFragment extends Fragment {
                                         payload.toString()
                                 );
                                 requireActivity().runOnUiThread(()->{
-                                    navController.navigate(R.id.action_adminHomeFragment_self);
+                                    navController.navigate(R.id.action_adminHomeFragment_self,bundle);
                                 });
                             }catch (Exception e){
                                 e.printStackTrace();

@@ -18,6 +18,7 @@ import android.widget.TextView;
 import com.infsml.hachiman.R;
 import com.infsml.hachiman.Utility;
 import com.infsml.hachiman.databinding.AdminHomeElementBinding;
+import com.infsml.hachiman.databinding.AdminTitleElementBinding;
 import com.infsml.hachiman.databinding.FragmentAdminOptionBinding;
 
 import org.json.JSONArray;
@@ -64,6 +65,14 @@ public class AdminOptionFragment extends Fragment {
                 navController.navigate(R.id.action_adminOptionFragment_to_adminAddOptionFragment, bundle1);
             }
         });
+        binding.csvBtn.setOnClickListener(v->{
+            if(optionData!=null) {
+                Bundle bundle1 = new Bundle(bundle);
+                bundle1.putString("prev",optionData.optJSONArray("prev").toString());
+                navController.navigate(R.id.action_adminOptionFragment_to_adminCsvOptionFragment, bundle1);
+            }
+        });
+
         binding.recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
         final OptionAdapter optionAdapter = new OptionAdapter();
         binding.recyclerView.setAdapter(optionAdapter);
@@ -98,9 +107,11 @@ public class AdminOptionFragment extends Fragment {
     public class OptionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
         public class VHtitle extends RecyclerView.ViewHolder{
             TextView textView;
-            public VHtitle(TextView textView){
-                super(textView);
-                this.textView=textView;
+            AdminTitleElementBinding binding;
+            public VHtitle(AdminTitleElementBinding binding){
+                super(binding.getRoot());
+                this.textView=binding.title;
+                this.binding = binding;
             }
         }
         public class VHoption extends RecyclerView.ViewHolder{
@@ -129,7 +140,9 @@ public class AdminOptionFragment extends Fragment {
         public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             RecyclerView.ViewHolder holder;
             if(viewType==0||viewType==2){
-                holder = new VHtitle(new TextView(requireContext()));
+                AdminTitleElementBinding titleElementBinding = AdminTitleElementBinding.inflate(
+                        LayoutInflater.from(parent.getContext()),parent,false);
+                holder = new VHtitle(titleElementBinding);
             }else{
                 AdminHomeElementBinding binding1 = AdminHomeElementBinding.inflate(
                         LayoutInflater.from(parent.getContext()),parent,false
@@ -149,6 +162,7 @@ public class AdminOptionFragment extends Fragment {
                 VHoption p = (VHoption) holder;
                 JSONObject object= prev.optJSONObject(position-1);
                 p.binding1.title.setText(object.optString("code")+" - "+object.optString("name"));
+                p.binding1.textView6.setVisibility(View.GONE);
             }else if(viewType==2){
                 VHtitle h = (VHtitle) holder;
                 h.textView.setText("Current Choices");
@@ -157,6 +171,8 @@ public class AdminOptionFragment extends Fragment {
                 VHoption p = (VHoption) holder;
                 JSONObject object = data.optJSONObject(position-prev.length()-2);
                 p.binding1.title.setText(object.optString("code")+" - "+object.optString("name") +" ("+object.optString("availability")+")");
+                p.binding1.textView6.setVisibility(View.VISIBLE);
+                p.binding1.textView6.setText("Prev Req : "+object.optString("requirement"));
             }
         }
 

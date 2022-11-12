@@ -16,6 +16,7 @@ import androidx.navigation.Navigation;
 import org.json.JSONObject;
 
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.nio.charset.StandardCharsets;
 
@@ -23,6 +24,7 @@ public class LoginFragment extends Fragment {
     NavController navController;
     View button_list;
     View spinner;
+    TextView msgbox;
     public LoginFragment() {
     }
 
@@ -51,6 +53,7 @@ public class LoginFragment extends Fragment {
         navController = Navigation.findNavController(requireActivity(),R.id.fragmentContainerView);
         button_list = fragment_view.findViewById(R.id.constraintLayout2);
         spinner = fragment_view.findViewById(R.id.progressBar);
+        msgbox = fragment_view.findViewById(R.id.msgbox);
         final TextView usn_textView = fragment_view.findViewById(R.id.usn);
         final TextView pass_textView = fragment_view.findViewById(R.id.password);
         signup_button.setOnClickListener((v)->{
@@ -79,13 +82,15 @@ public class LoginFragment extends Fragment {
                 public void run(){
                     try {
                         JSONObject payload = new JSONObject();
-                        payload.put("username", usn_textView.getText().toString());
-                        payload.put("password",pass_textView.getText().toString());
+                        String usn_s = usn_textView.getText().toString();
+                        payload.put("username", usn_s.toUpperCase());
+                        String pass_s = pass_textView.getText().toString();
+                        payload.put("password", PasswordHash.getHash(pass_s));
                         JSONObject res = Utility.postJSON(Utility.api_base + "/login", payload.toString());
                         JSONObject saveData = new JSONObject();
-                        saveData.put("username",payload.optString("username"));
-                        saveData.put("token",res.optString("token"));
-                        saveData.put("admin",res.optInt("admin"));
+                        saveData.put("username", payload.optString("username"));
+                        saveData.put("token", res.optString("token"));
+                        saveData.put("admin", res.optInt("admin"));
                         FileOutputStream prev_login = getContext().openFileOutput("prev_login.json", Context.MODE_PRIVATE);
                         prev_login.write(saveData.toString().getBytes(StandardCharsets.UTF_8));
                         prev_login.flush();
@@ -94,15 +99,24 @@ public class LoginFragment extends Fragment {
                             @Override
                             public void run() {
                                 Bundle bundle = new Bundle();
-                                bundle.putString("username",payload.optString("username"));
-                                bundle.putString("auth_token",res.optString("token"));
+                                bundle.putString("username", payload.optString("username"));
+                                bundle.putString("auth_token", res.optString("token"));
                                 int admin = res.optInt("admin");
-                                Log.i("admin","admin = "+admin);
-                                if(admin==1){
-                                    navController.navigate(R.id.action_loginFragment_to_adminHomeFragment,bundle);
-                                }else {
+                                Log.i("admin", "admin = " + admin);
+                                if (admin == 1) {
+                                    navController.navigate(R.id.action_loginFragment_to_adminHomeFragment, bundle);
+                                } else {
                                     navController.navigate(R.id.action_loginFragment_to_homeFragment, bundle);
                                 }
+                            }
+                        });
+                    }catch (FileNotFoundException e){
+                        requireActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                giveMsg("Invalid username or password");
+                                button_list.setVisibility(View.VISIBLE);
+                                spinner.setVisibility(View.GONE);
                             }
                         });
                     }catch (Exception e){
@@ -165,5 +179,9 @@ public class LoginFragment extends Fragment {
                 navController.navigate(res);
             }
         });
+    }
+    public void giveMsg(String str){
+        msgbox.setText(str);
+        msgbox.setVisibility(View.VISIBLE);
     }
 }

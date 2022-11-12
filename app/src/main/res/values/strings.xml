@@ -36,4 +36,8 @@
         <item>Previous</item>
         <item>Current</item>
     </string-array>
+    <string-array name="admin_report_spinner">
+        <item>All Data</item>
+        <item>Section Wise Counts</item>
+    </string-array>
 </resources>
