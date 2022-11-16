@@ -23,6 +23,9 @@
             app:destination="@id/adminHomeFragment"
             app:popUpTo="@id/loginFragment"
             app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_loginFragment_to_changePasswordFragment"
+            app:destination="@id/changePasswordFragment" />
     </fragment>
     <fragment
         android:id="@+id/signupFragment"
@@ -208,10 +211,23 @@
         <action
             android:id="@+id/action_adminPreHomeFragment_to_adminReportFragment"
             app:destination="@id/adminReportFragment" />
+        <action
+            android:id="@+id/action_adminPreHomeFragment_to_adminCsvTemplateFragment"
+            app:destination="@id/adminCsvTemplateFragment" />
     </fragment>
     <fragment
         android:id="@+id/adminReportFragment"
         android:name="com.infsml.hachiman.admin.AdminReportFragment"
         android:label="fragment_admin_report"
         tools:layout="@layout/fragment_admin_report" />
+    <fragment
+        android:id="@+id/changePasswordFragment"
+        android:name="com.infsml.hachiman.ChangePasswordFragment"
+        android:label="fragment_change_password"
+        tools:layout="@layout/fragment_change_password" />
+    <fragment
+        android:id="@+id/adminCsvTemplateFragment"
+        android:name="com.infsml.hachiman.admin.AdminCsvTemplateFragment"
+        android:label="fragment_admin_csv_template"
+        tools:layout="@layout/fragment_admin_csv_template" />
 </navigation>

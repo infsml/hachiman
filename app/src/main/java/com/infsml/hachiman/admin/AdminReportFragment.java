@@ -81,7 +81,9 @@ public class AdminReportFragment extends Fragment {
                     else saveCSV(result,sectionWise);
                 });
         binding.addBtn.setOnClickListener(v->{
-            mGetContent.launch("*/*");
+            if(binding.spinner3.getSelectedItemPosition()==0)
+            mGetContent.launch("allData.csv");
+            else mGetContent.launch("sectionWise.csv");
         });
 
         binding.spinner3.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {

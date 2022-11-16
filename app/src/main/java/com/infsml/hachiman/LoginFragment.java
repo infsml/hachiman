@@ -59,6 +59,10 @@ public class LoginFragment extends Fragment {
         signup_button.setOnClickListener((v)->{
             navController.navigate(R.id.action_loginFragment_to_signupFragment);
         });
+        Button ch_pass = fragment_view.findViewById(R.id.change_pass_btn);
+        ch_pass.setOnClickListener(v->{
+            navController.navigate(R.id.action_loginFragment_to_changePasswordFragment);
+        });
         Button login_button = fragment_view.findViewById(R.id.register_button);
         Bundle args = getArguments();
         try {
