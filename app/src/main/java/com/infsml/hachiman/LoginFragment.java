@@ -16,6 +16,7 @@ import androidx.navigation.Navigation;
 import org.json.JSONObject;
 
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.nio.charset.StandardCharsets;
 
@@ -23,6 +24,7 @@ public class LoginFragment extends Fragment {
     NavController navController;
     View button_list;
     View spinner;
+    TextView msgbox;
     public LoginFragment() {
     }
 
@@ -47,16 +49,21 @@ public class LoginFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View fragment_view =inflater.inflate(R.layout.fragment_login, container, false);
-        Button signup_button = fragment_view.findViewById(R.id.button);
+        Button signup_button = fragment_view.findViewById(R.id.cancel_button);
         navController = Navigation.findNavController(requireActivity(),R.id.fragmentContainerView);
         button_list = fragment_view.findViewById(R.id.constraintLayout2);
         spinner = fragment_view.findViewById(R.id.progressBar);
-        final TextView usn_textView = fragment_view.findViewById(R.id.USN);
-        final TextView pass_textView = fragment_view.findViewById(R.id.PASSWORD);
+        msgbox = fragment_view.findViewById(R.id.msgbox);
+        final TextView usn_textView = fragment_view.findViewById(R.id.usn);
+        final TextView pass_textView = fragment_view.findViewById(R.id.password);
         signup_button.setOnClickListener((v)->{
             navController.navigate(R.id.action_loginFragment_to_signupFragment);
         });
-        Button login_button = fragment_view.findViewById(R.id.button2);
+        Button ch_pass = fragment_view.findViewById(R.id.change_pass_btn);
+        ch_pass.setOnClickListener(v->{
+            navController.navigate(R.id.action_loginFragment_to_changePasswordFragment);
+        });
+        Button login_button = fragment_view.findViewById(R.id.register_button);
         Bundle args = getArguments();
         try {
             if (args != null) {
@@ -79,12 +86,15 @@ public class LoginFragment extends Fragment {
                 public void run(){
                     try {
                         JSONObject payload = new JSONObject();
-                        payload.put("username", usn_textView.getText().toString());
-                        payload.put("password",pass_textView.getText().toString());
+                        String usn_s = usn_textView.getText().toString();
+                        payload.put("username", usn_s.toUpperCase());
+                        String pass_s = pass_textView.getText().toString();
+                        payload.put("password", PasswordHash.getHash(pass_s));
                         JSONObject res = Utility.postJSON(Utility.api_base + "/login", payload.toString());
                         JSONObject saveData = new JSONObject();
-                        saveData.put("username",payload.optString("username"));
-                        saveData.put("token",res.optString("token"));
+                        saveData.put("username", payload.optString("username"));
+                        saveData.put("token", res.optString("token"));
+                        saveData.put("admin", res.optInt("admin"));
                         FileOutputStream prev_login = getContext().openFileOutput("prev_login.json", Context.MODE_PRIVATE);
                         prev_login.write(saveData.toString().getBytes(StandardCharsets.UTF_8));
                         prev_login.flush();
@@ -93,9 +103,24 @@ public class LoginFragment extends Fragment {
                             @Override
                             public void run() {
                                 Bundle bundle = new Bundle();
-                                bundle.putString("username",payload.optString("username"));
-                                bundle.putString("auth_token",res.optString("token"));
-                                navController.navigate(R.id.action_loginFragment_to_homeFragment,bundle);
+                                bundle.putString("username", payload.optString("username"));
+                                bundle.putString("auth_token", res.optString("token"));
+                                int admin = res.optInt("admin");
+                                Log.i("admin", "admin = " + admin);
+                                if (admin == 1) {
+                                    navController.navigate(R.id.action_loginFragment_to_adminHomeFragment, bundle);
+                                } else {
+                                    navController.navigate(R.id.action_loginFragment_to_homeFragment, bundle);
+                                }
+                            }
+                        });
+                    }catch (FileNotFoundException e){
+                        requireActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                giveMsg("Invalid username or password");
+                                button_list.setVisibility(View.VISIBLE);
+                                spinner.setVisibility(View.GONE);
                             }
                         });
                     }catch (Exception e){
@@ -126,13 +151,18 @@ public class LoginFragment extends Fragment {
             JSONObject readJSON = new JSONObject(readData);
             String uname = readJSON.getString("username");
             String token = readJSON.getString("token");
+            int admin = readJSON.getInt("admin");
             requireActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
                     Bundle bundle = new Bundle();
                     bundle.putString("username",uname);
                     bundle.putString("auth_token",token);
-                    navController.navigate(R.id.action_loginFragment_to_homeFragment,bundle);
+                    if(admin==1){
+                        navController.navigate(R.id.action_loginFragment_to_adminHomeFragment,bundle);
+                    }else {
+                        navController.navigate(R.id.action_loginFragment_to_homeFragment, bundle);
+                    }
                 }
             });
         }catch (Exception e) {
@@ -153,5 +183,9 @@ public class LoginFragment extends Fragment {
                 navController.navigate(res);
             }
         });
+    }
+    public void giveMsg(String str){
+        msgbox.setText(str);
+        msgbox.setVisibility(View.VISIBLE);
     }
 }
