@@ -117,6 +117,8 @@ public class AdminOptionFragment extends Fragment {
         public class VHoption extends RecyclerView.ViewHolder{
             AdminHomeElementBinding binding1;
             boolean btn_vis = false;
+            String code;
+            String type;
             public VHoption(AdminHomeElementBinding binding1){
                 super(binding1.getRoot());
                 this.binding1=binding1;
@@ -126,6 +128,35 @@ public class AdminOptionFragment extends Fragment {
                     btn_vis = !btn_vis;
                     if(btn_vis)binding1.btnLyt.setVisibility(View.VISIBLE);
                     else binding1.btnLyt.setVisibility(View.GONE);
+                });
+                binding1.deleteBtn.setOnClickListener(v->{
+                    binding.recyclerView.setVisibility(View.GONE);
+                    (new Thread(){
+                        @Override
+                        public void run(){
+                            try {
+                                JSONObject payload = new JSONObject();
+                                payload.put("username",username);
+                                payload.put("auth_token",auth_token);
+                                payload.put("event",event);
+                                payload.put("option",code);
+                                payload.put("course_type",type);
+                                JSONObject res = Utility.postJSON(
+                                        Utility.api_base+"/delete-option-admin",
+                                        payload.toString()
+                                );
+                                requireActivity().runOnUiThread(()->{
+                                    navController.navigate(R.id.action_adminOptionFragment_self,bundle);
+                                });
+                            }catch (Exception e){
+                                e.printStackTrace();
+                                requireActivity().runOnUiThread(()->{
+                                    binding.recyclerView.setVisibility(View.VISIBLE);
+                                    binding1.deleteBtn.setText("Retry");
+                                });
+                            }
+                        }
+                    }).start();
                 });
             }
         }
@@ -163,6 +194,8 @@ public class AdminOptionFragment extends Fragment {
                 JSONObject object= prev.optJSONObject(position-1);
                 p.binding1.title.setText(object.optString("code")+" - "+object.optString("name"));
                 p.binding1.textView6.setVisibility(View.GONE);
+                p.code = object.optString("code");
+                p.type = "previous";
             }else if(viewType==2){
                 VHtitle h = (VHtitle) holder;
                 h.textView.setText("Current Choices");
@@ -173,6 +206,8 @@ public class AdminOptionFragment extends Fragment {
                 p.binding1.title.setText(object.optString("code")+" - "+object.optString("name") +" ("+object.optString("availability")+")");
                 p.binding1.textView6.setVisibility(View.VISIBLE);
                 p.binding1.textView6.setText("Prev Req : "+object.optString("requirement"));
+                p.code = object.optString("code");
+                p.type = "current";
             }
         }
 

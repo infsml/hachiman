@@ -155,6 +155,11 @@
             android:id="@+id/action_adminOptionFragment_to_adminCsvOptionFragment"
             app:destination="@id/adminCsvOptionFragment"
             app:popUpToInclusive="false" />
+        <action
+            android:id="@+id/action_adminOptionFragment_self"
+            app:destination="@id/adminOptionFragment"
+            app:popUpTo="@id/adminOptionFragment"
+            app:popUpToInclusive="true" />
     </fragment>
     <fragment
         android:id="@+id/adminAddEventFragment"
