@@ -18,7 +18,8 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
 public class Utility {
-    public static final String api_base="https://10.0.2.2:8080";
+    //public static final String api_base="https://10.0.2.2:8080";
+    public static final String api_base = "https://ec2-43-205-103-78.ap-south-1.compute.amazonaws.com:8080";
     public static JSONObject postJSON(String url_link,String jsonString) throws Exception{
         TrustManager[] trustAllCerts = new TrustManager[] {new X509TrustManager() {
             public java.security.cert.X509Certificate[] getAcceptedIssuers() {

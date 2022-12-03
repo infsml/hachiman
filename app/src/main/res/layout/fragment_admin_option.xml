@@ -11,29 +11,58 @@
         android:id="@+id/recyclerView"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        tools:listitem="@layout/admin_option_element"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/add_btn" />
+        app:layout_constraintTop_toBottomOf="@+id/top_app" />
 
-    <Button
-        android:id="@+id/add_btn"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:id="@+id/top_app"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="Add"
-        app:layout_constraintEnd_toStartOf="@+id/csv_btn"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <Button
-        android:id="@+id/csv_btn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="CSV"
+        android:background="@drawable/bottom_right_small"
+        android:orientation="vertical"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/add_btn"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/textView8"
+            style="@style/big_head"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Subjects" />
+
+        <LinearLayout
+            android:id="@+id/btn_stuff"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <android.widget.Button
+                android:id="@+id/add_btn"
+                style="@style/btn_orange_stroke_style"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="20dp"
+                android:layout_marginBottom="10dp"
+                android:text="Add" />
+
+            <android.widget.Button
+                android:id="@+id/csv_btn"
+                style="@style/btn_orange_stroke_style"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="20dp"
+                android:layout_marginBottom="10dp"
+                android:text="CSV" />
+        </LinearLayout>
+    </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

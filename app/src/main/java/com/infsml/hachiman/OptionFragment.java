@@ -128,7 +128,7 @@ public class OptionFragment extends Fragment {
         public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
             JSONObject jsonObject = items.get(position);
             String code=jsonObject.optString("code");
-            holder.elementBinding.title.setText(code+"-"+jsonObject.optString("name"));
+            holder.elementBinding.title.setText(code+" - "+jsonObject.optString("name"));
             holder.value=code;
             holder.elementBinding.code.setText(code);
             holder.elementBinding.name.setText(jsonObject.optString("name"));

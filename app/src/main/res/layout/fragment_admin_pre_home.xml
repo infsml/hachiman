@@ -9,21 +9,26 @@
 
 
 
-    <Button
+    <android.widget.Button
         android:id="@+id/course_edit"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
+        style="@style/btn_orange_style"
         android:layout_height="wrap_content"
+        android:layout_margin="10dp"
         android:text="Edit Courses"
+        app:layout_constraintVertical_chainStyle="packed"
         app:layout_constraintBottom_toTopOf="@+id/report_btn"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@id/top_app" />
 
-    <Button
+    <android.widget.Button
         android:id="@+id/report_btn"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
+        style="@style/btn_orange_style"
         android:layout_height="wrap_content"
+        android:layout_margin="10dp"
         android:text="Reports"
         app:layout_constraintBottom_toTopOf="@+id/template_btn"
         app:layout_constraintEnd_toEndOf="parent"
@@ -31,15 +36,35 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/course_edit" />
 
-    <Button
+    <android.widget.Button
         android:id="@+id/template_btn"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
+        style="@style/btn_orange_style"
         android:layout_height="wrap_content"
+        android:layout_margin="10dp"
         android:text="CSV Templates"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/report_btn" />
+    <LinearLayout
+        android:id="@+id/top_app"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bottom_right_small"
+        android:orientation="vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/textView8"
+            style="@style/big_head"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Sign Up" />
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

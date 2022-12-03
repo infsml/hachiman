@@ -141,6 +141,9 @@
         <action
             android:id="@+id/action_adminHomeFragment_to_adminPreHomeFragment"
             app:destination="@id/adminPreHomeFragment" />
+        <action
+            android:id="@+id/action_adminHomeFragment_to_passwordResetFragment"
+            app:destination="@id/passwordResetFragment" />
     </fragment>
     <fragment
         android:id="@+id/adminOptionFragment"
@@ -235,4 +238,9 @@
         android:name="com.infsml.hachiman.admin.AdminCsvTemplateFragment"
         android:label="fragment_admin_csv_template"
         tools:layout="@layout/fragment_admin_csv_template" />
+    <fragment
+        android:id="@+id/passwordResetFragment"
+        android:name="com.infsml.hachiman.admin.PasswordResetFragment"
+        android:label="fragment_password_reset"
+        tools:layout="@layout/fragment_password_reset" />
 </navigation>

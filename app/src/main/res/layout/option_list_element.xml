@@ -11,7 +11,8 @@
         android:id="@+id/title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/textaf"
+        android:text="20CSE42 - Metallurgical Studies In Underground"
+        android:gravity="center"
         android:textSize="20sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toTopOf="@+id/expand_layout"
@@ -23,7 +24,7 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/expand_layout"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -35,7 +36,7 @@
 
         <TableLayout
             android:id="@+id/tableLayout"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             app:layout_constraintBottom_toTopOf="@+id/button7"
             app:layout_constraintEnd_toEndOf="parent"
@@ -52,14 +53,19 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="center_horizontal"
-                    android:text="@string/code" />
+                    android:padding="10dp"
+                    android:text="@string/code"
+                    android:textSize="16sp" />
 
                 <TextView
                     android:id="@+id/code"
-                    android:layout_width="wrap_content"
+                    android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
+                    android:layout_weight="1"
                     android:gravity="center_horizontal"
-                    android:text="@string/textaf" />
+                    android:padding="10dp"
+                    android:text="20CSE42"
+                    android:textSize="16sp" />
             </TableRow>
 
             <TableRow
@@ -71,14 +77,19 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="center_horizontal"
-                    android:text="@string/name" />
+                    android:padding="10dp"
+                    android:text="@string/name"
+                    android:textSize="16sp" />
 
                 <TextView
                     android:id="@+id/name"
-                    android:layout_width="wrap_content"
+                    android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
+                    android:layout_weight="1"
                     android:gravity="center_horizontal"
-                    android:text="@string/textaf" />
+                    android:padding="10dp"
+                    android:text="Metallurgical Studies In Underground"
+                    android:textSize="16sp" />
             </TableRow>
 
             <TableRow
@@ -90,14 +101,19 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="center_horizontal"
-                    android:text="@string/available" />
+                    android:padding="10dp"
+                    android:text="@string/available"
+                    android:textSize="16sp" />
 
                 <TextView
                     android:id="@+id/available"
-                    android:layout_width="wrap_content"
+                    android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
+                    android:layout_weight="1"
                     android:gravity="center_horizontal"
-                    android:text="@string/textaf" />
+                    android:padding="10dp"
+                    android:text="5"
+                    android:textSize="16sp" />
             </TableRow>
 
         </TableLayout>
@@ -107,6 +123,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/register"
+            android:textSize="16sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"

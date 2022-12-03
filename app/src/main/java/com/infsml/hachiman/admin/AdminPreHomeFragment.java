@@ -59,6 +59,7 @@ public class AdminPreHomeFragment extends Fragment {
         binding.templateBtn.setOnClickListener(v->{
             navController.navigate(R.id.action_adminPreHomeFragment_to_adminCsvTemplateFragment,bundle);
         });
+        binding.textView8.setText(bundle.getString("event"));
         return binding.getRoot();
     }
     /*public void fetchUserAttributes(Runnable runnable){

@@ -7,21 +7,26 @@
     android:layout_height="match_parent"
     tools:context=".admin.AdminCsvTemplateFragment">
 
-    <Button
+    <android.widget.Button
         android:id="@+id/course_btn"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
+        style="@style/btn_orange_style"
         android:layout_height="wrap_content"
+        android:layout_margin="10dp"
         android:text="Course Template"
+        app:layout_constraintVertical_chainStyle="packed"
         app:layout_constraintBottom_toTopOf="@+id/prev_opt_btn"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <Button
+    <android.widget.Button
         android:id="@+id/prev_opt_btn"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
+        style="@style/btn_orange_style"
         android:layout_height="wrap_content"
+        android:layout_margin="10dp"
         android:text="Previous Option Template"
         app:layout_constraintBottom_toTopOf="@+id/opt_btn"
         app:layout_constraintEnd_toEndOf="parent"
@@ -29,14 +34,34 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/course_btn" />
 
-    <Button
+    <android.widget.Button
         android:id="@+id/opt_btn"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
+        style="@style/btn_orange_style"
         android:layout_height="wrap_content"
+        android:layout_margin="10dp"
         android:text="Option Template"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/prev_opt_btn" />
+    <LinearLayout
+        android:id="@+id/top_app"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bottom_right_small"
+        android:orientation="vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/textView8"
+            style="@style/big_head"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="CSV Templates" />
+    </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

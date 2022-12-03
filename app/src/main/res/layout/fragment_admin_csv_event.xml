@@ -16,7 +16,7 @@
         app:layout_constraintEnd_toStartOf="@+id/select_btn"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="@id/select_btn" />
 
     <Button
         android:id="@+id/select_btn"
@@ -27,7 +27,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/file_name"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@id/top_app" />
 
     <ScrollView
         android:id="@+id/main_scroll"
@@ -48,14 +48,34 @@
         </HorizontalScrollView>
     </ScrollView>
 
-    <Button
+    <android.widget.Button
         android:id="@+id/add_btn"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
+        style="@style/btn_orange_style"
         android:layout_height="wrap_content"
+        android:layout_margin="10dp"
         android:text="Add"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/main_scroll" />
+    <LinearLayout
+        android:id="@+id/top_app"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bottom_right_small"
+        android:orientation="vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/textView8"
+            style="@style/big_head"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Add Subject CSV" />
+    </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

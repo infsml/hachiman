@@ -194,6 +194,7 @@ public class AdminReportFragment extends Fragment {
                 TextView textView = new TextView(requireContext());
                 textView.setText(cell);
                 textView.setPadding(dp_fun(5),dp_fun(5),dp_fun(5),dp_fun(5));
+                textView.setBackgroundResource(R.drawable.rectangle);
                 tableRow.addView(textView);
             }
             binding.mainTable.addView(tableRow);

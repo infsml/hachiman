@@ -135,6 +135,7 @@ public class AdminCsvOptionFragment extends Fragment {
         return binding.getRoot();
     }
     public void loadCSV(Uri uri){
+        binding.fileName.setText(uri.getLastPathSegment());
         (new Thread(){
             @Override
             public void run(){
@@ -162,6 +163,8 @@ public class AdminCsvOptionFragment extends Fragment {
                             for(String cell : row){
                                 TextView textView = new TextView(requireContext());
                                 textView.setText(cell);
+                                textView.setPadding(dp_fun(5),dp_fun(5),dp_fun(5),dp_fun(5));
+                                textView.setBackgroundResource(R.drawable.rectangle);
                                 tableRow.addView(textView);
                             }
                             if(course_type==1 && !prev_set.contains(row.get(row.size()-1)))
@@ -174,5 +177,9 @@ public class AdminCsvOptionFragment extends Fragment {
                 }
             }
         }).start();
+    }
+    int dp_fun(int px){
+        final float scale = getResources().getDisplayMetrics().density;
+        return (int)(px*scale+0.5f);
     }
 }

@@ -53,6 +53,7 @@ public class AdminHomeFragment extends Fragment {
     }
 
     FragmentAdminHomeBinding binding;
+    boolean top_app_vis = false;
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -67,13 +68,14 @@ public class AdminHomeFragment extends Fragment {
         binding.csvBtn.setOnClickListener(v->{
             navController.navigate(R.id.action_adminHomeFragment_to_adminCsvEventFragment,bundle);
         });
+        binding.passResetBtn.setOnClickListener(v->{
+            navController.navigate(R.id.action_adminHomeFragment_to_passwordResetFragment,bundle);
+        });
 
-            fetchUserData(()->{
+        fetchUserData(()->{
                 AdminHomeFragment.HomeListAdapter adapter = (AdminHomeFragment.HomeListAdapter) binding.homeRecyclerView.getAdapter();
                 adapter.loadData(event_data);
             });
-            MaterialToolbar toolbar = requireActivity().findViewById(R.id.materialToolbar);
-            toolbar.setTitle(username);
         binding.signoutBtn.setOnClickListener(v -> {
             Log.i("AuthQuickStart","signing out XD");
             Button b = (Button) v;
@@ -115,6 +117,13 @@ public class AdminHomeFragment extends Fragment {
         });
         binding.homeRecyclerView.setAdapter(new AdminHomeFragment.HomeListAdapter(navController));
         binding.homeRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        binding.topApp.setOnClickListener(v->{
+            top_app_vis = !top_app_vis;
+            if(top_app_vis)binding.btnStuff.setVisibility(View.VISIBLE);
+            else binding.btnStuff.setVisibility(View.GONE);
+        });
+        binding.btnStuff.setVisibility(View.GONE);
+
         return binding.getRoot();
     }
 
@@ -164,7 +173,6 @@ public class AdminHomeFragment extends Fragment {
                     bundle1.putString("event",code);
                     navController.navigate(R.id.action_adminHomeFragment_to_adminPreHomeFragment,bundle1);
                 });
-                binding2.textView6.setVisibility(View.GONE);
                 binding2.deleteBtn.setOnClickListener(v->{
                     binding.homeRecyclerView.setVisibility(View.GONE);
                     (new Thread(){
@@ -196,7 +204,9 @@ public class AdminHomeFragment extends Fragment {
             public void setData(JSONObject jsonObject){
                 code = jsonObject.optString("code");
                 name = jsonObject.optString("name");
-                binding2.title.setText(code+" - "+name+" "+jsonObject.optString("sem")+" Sem");
+                binding2.codeVal.setText(code);
+                binding2.nameVal.setText(name);
+                binding2.semVal.setText(jsonObject.optString("sem")+" Sem");
             }
         }
 

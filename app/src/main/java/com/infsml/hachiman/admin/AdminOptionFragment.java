@@ -18,6 +18,7 @@ import android.widget.TextView;
 import com.infsml.hachiman.R;
 import com.infsml.hachiman.Utility;
 import com.infsml.hachiman.databinding.AdminHomeElementBinding;
+import com.infsml.hachiman.databinding.AdminOptionElementBinding;
 import com.infsml.hachiman.databinding.AdminTitleElementBinding;
 import com.infsml.hachiman.databinding.FragmentAdminOptionBinding;
 
@@ -47,7 +48,7 @@ public class AdminOptionFragment extends Fragment {
         }
     }
     FragmentAdminOptionBinding binding;
-
+    boolean top_app_vis = false;
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -79,6 +80,13 @@ public class AdminOptionFragment extends Fragment {
         fetchOptionData(()->{
             optionAdapter.updateData();
         });
+        binding.topApp.setOnClickListener(v->{
+            top_app_vis = !top_app_vis;
+            if(top_app_vis)binding.btnStuff.setVisibility(View.VISIBLE);
+            else binding.btnStuff.setVisibility(View.GONE);
+        });
+        binding.btnStuff.setVisibility(View.GONE);
+
         return binding.getRoot();
     }
     JSONObject optionData;
@@ -115,14 +123,13 @@ public class AdminOptionFragment extends Fragment {
             }
         }
         public class VHoption extends RecyclerView.ViewHolder{
-            AdminHomeElementBinding binding1;
+            AdminOptionElementBinding binding1;
             boolean btn_vis = false;
             String code;
             String type;
-            public VHoption(AdminHomeElementBinding binding1){
+            public VHoption(AdminOptionElementBinding binding1){
                 super(binding1.getRoot());
                 this.binding1=binding1;
-                binding1.coursesBtn.setVisibility(View.GONE);
                 binding1.btnLyt.setVisibility(View.GONE);
                 binding1.parentLayout.setOnClickListener(v->{
                     btn_vis = !btn_vis;
@@ -175,7 +182,7 @@ public class AdminOptionFragment extends Fragment {
                         LayoutInflater.from(parent.getContext()),parent,false);
                 holder = new VHtitle(titleElementBinding);
             }else{
-                AdminHomeElementBinding binding1 = AdminHomeElementBinding.inflate(
+                AdminOptionElementBinding binding1 = AdminOptionElementBinding.inflate(
                         LayoutInflater.from(parent.getContext()),parent,false
                 );
                 holder = new VHoption(binding1);
@@ -192,8 +199,9 @@ public class AdminOptionFragment extends Fragment {
             }else if(viewType==1){
                 VHoption p = (VHoption) holder;
                 JSONObject object= prev.optJSONObject(position-1);
-                p.binding1.title.setText(object.optString("code")+" - "+object.optString("name"));
-                p.binding1.textView6.setVisibility(View.GONE);
+                p.binding1.codeVal.setText(object.optString("code"));
+                p.binding1.nameVal.setText(object.optString("name"));
+                p.binding1.semVal.setVisibility(View.GONE);
                 p.code = object.optString("code");
                 p.type = "previous";
             }else if(viewType==2){
@@ -203,9 +211,10 @@ public class AdminOptionFragment extends Fragment {
             else{
                 VHoption p = (VHoption) holder;
                 JSONObject object = data.optJSONObject(position-prev.length()-2);
-                p.binding1.title.setText(object.optString("code")+" - "+object.optString("name") +" ("+object.optString("availability")+")");
-                p.binding1.textView6.setVisibility(View.VISIBLE);
-                p.binding1.textView6.setText("Prev Req : "+object.optString("requirement"));
+                p.binding1.codeVal.setText(object.optString("code"));
+                p.binding1.nameVal.setText(object.optString("name"));
+                p.binding1.semVal.setVisibility(View.VISIBLE);
+                p.binding1.semVal.setText("Available : "+object.optString("availability")+"Previous Requirement : "+object.optString("requirement"));
                 p.code = object.optString("code");
                 p.type = "current";
             }

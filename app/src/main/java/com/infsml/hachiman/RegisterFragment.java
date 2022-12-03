@@ -106,7 +106,7 @@ public class RegisterFragment extends Fragment {
             navController.navigate(R.id.action_registerFragment_to_homeFragment, bundle);
             return fragment_view;
         }
-        binding.heading.setText(event);
+        //binding.heading.setText(event);
         binding.usnVal.setText(username);
         binding.semesterVal.setText(""+semester);
         binding.sectionVal.setText(section);

@@ -48,7 +48,7 @@ public class HomeFragment extends Fragment{
         if (getArguments() != null) {
         }
     }
-
+    boolean top_app_vis = false;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -71,8 +71,6 @@ public class HomeFragment extends Fragment{
                 adapter.loadData(event_data);
                 Log.i("Hachiman",username);
             });
-            MaterialToolbar toolbar = requireActivity().findViewById(R.id.materialToolbar);
-            toolbar.setTitle(username);
         });
         recyclerView = fragment_view.findViewById(R.id.home_recycler_view);
         recyclerView.setAdapter(new HomeListAdapter(navController,bundle));
@@ -117,6 +115,14 @@ public class HomeFragment extends Fragment{
                 }
             }).start();
         });
+        View btn_stuff = fragment_view.findViewById(R.id.btn_stuff);
+        View top_app = fragment_view.findViewById(R.id.top_app);
+        top_app.setOnClickListener(v->{
+            top_app_vis = !top_app_vis;
+            if(top_app_vis)btn_stuff.setVisibility(View.VISIBLE);
+            else btn_stuff.setVisibility(View.GONE);
+        });
+        btn_stuff.setVisibility(View.GONE);
         return fragment_view;
     }
 
@@ -180,6 +186,7 @@ public class HomeFragment extends Fragment{
         Bundle bundle;
 
         class ItemViewHolder extends RecyclerView.ViewHolder{
+            TextView subText;
             TextView mainText;
             String value;
             public ItemViewHolder(
@@ -187,7 +194,8 @@ public class HomeFragment extends Fragment{
                     NavController controller,
                     Bundle bundle) {
                 super(itemView);
-                mainText = itemView.findViewById(R.id.textView);
+                mainText = itemView.findViewById(R.id.code_val);
+                subText = itemView.findViewById(R.id.name_val);
                 View view = itemView.findViewById(R.id.parent_layout);
                 view.setOnClickListener(v->{
                     bundle.putString("event",value);
@@ -197,9 +205,6 @@ public class HomeFragment extends Fragment{
                     bundle.putInt("admin",admin);
                     controller.navigate(R.id.action_homeFragment_to_registerFragment,bundle);
                 });
-            }
-            public void putText(String text){
-                mainText.setText(text);
             }
         }
         class RegViewHolder extends RecyclerView.ViewHolder{
@@ -249,7 +254,8 @@ public class HomeFragment extends Fragment{
                 ItemViewHolder viewHolder = (ItemViewHolder) holder;
                 JSONObject jsonObject = items.optJSONObject(position);
                 String code = jsonObject.optString("code");
-                viewHolder.putText(code);
+                viewHolder.mainText.setText(code);
+                viewHolder.subText.setText(jsonObject.optString("name"));
                 viewHolder.value = code;
             }else if(type ==1){
                 RegViewHolder viewHolder = (RegViewHolder) holder;

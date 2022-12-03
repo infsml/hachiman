@@ -48,13 +48,9 @@ public class SignupFragment extends Fragment {
         //View fragment_view =inflater.inflate(R.layout.fragment_signup, container, false);
 
         navController = Navigation.findNavController(getActivity(),R.id.fragmentContainerView);
-        binding.cancelButton.setOnClickListener((v)->{
-            navController.popBackStack();
-        });
         binding.progressBar.setVisibility(View.GONE);
         binding.registerButton.setOnClickListener((v)->{
             String usn_s = binding.usn.getText().toString().toUpperCase();
-            String email_s=binding.email.getText().toString();
             String name_s = binding.nameInput.getText().toString().trim();
             String section_s=binding.section.getText().toString();
             String sem_s=binding.semester.getText().toString();
